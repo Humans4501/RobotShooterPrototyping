@@ -4,10 +4,12 @@ import java.util.function.DoubleSupplier;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
+//4501 2/7/2024 yadabadoooooo
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -43,6 +45,7 @@ public class Shooter extends SubsystemBase {
 			this.mShooterTop.stopMotor();
 			this.mFeedMotor.stopMotor();
 			this.mTimer.stop();
+			SmartDashboard.putString(kStatusName, "Stopped shooting");
 		}));
 
 		// Print out expected CAN IDs
@@ -73,13 +76,7 @@ public class Shooter extends SubsystemBase {
 				SmartDashboard.putString(kStatusName, "Feeding");
 			}),
 			this.deferredWaitCommand(() -> SmartDashboard.getNumber(kFeedTimeName, 1.0)),
-			this.runOnce(() -> {
-				// Stops motor and the timer
-				this.mShooterTop.stopMotor();
-				this.mFeedMotor.stopMotor();
-				this.mTimer.stop();
-				SmartDashboard.putString(kStatusName, "Stopped shooting");
-			})
+			new RepeatCommand(new InstantCommand())
 		);
 
 		shootCmd.addRequirements(this);
