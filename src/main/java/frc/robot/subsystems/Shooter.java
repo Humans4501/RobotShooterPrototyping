@@ -40,7 +40,6 @@ public class Shooter extends SubsystemBase {
 	private static final String kMotorSpeedName = "Motor Speed";
 	private static final String kFeedSpeedName = "Feed Speed";
 	private static final String kSpinupTimeName = "Spinup Time";
-	private static final String kFeedTimeName = "Feed Time";
 	private static final String kStatusName = "Shooter Status";
 
 	private final Timer mTimer = new Timer();
@@ -93,7 +92,6 @@ public class Shooter extends SubsystemBase {
 		SmartDashboard.setDefaultNumber(Shooter.kMotorSpeedName, 0);
 		SmartDashboard.setDefaultNumber(Shooter.kFeedSpeedName, 0);
 		SmartDashboard.setDefaultNumber(Shooter.kSpinupTimeName, 2.0);
-		SmartDashboard.setDefaultNumber(Shooter.kFeedTimeName, 1.0);
 		SmartDashboard.setDefaultString(Shooter.kStatusName, "");
 
 		this.setDefaultCommand(this.run(() -> {
@@ -130,7 +128,6 @@ public class Shooter extends SubsystemBase {
 				this.mFeedMotor.set(SmartDashboard.getNumber(Shooter.kFeedSpeedName, 0));
 				SmartDashboard.putString(Shooter.kStatusName, "Feeding");
 			}),
-			this.deferredWaitCommand(() -> SmartDashboard.getNumber(Shooter.kFeedTimeName, 1.0)),
 			new RepeatCommand(new InstantCommand())
 		);
 
