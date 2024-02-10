@@ -53,12 +53,14 @@ public class RobotContainer {
 			.whileTrue(
 				this.sShooter.sysidTopQuasi()
 					.alongWith(this.sShooter.sysidBtmQuasi())
+					.alongWith(new PrintCommand("Running Quasistatic Identification"))
 			);
 
 		this.mJoystick.button(3)
 			.whileTrue(
 				this.sShooter.sysidTopDynamic()
 					.alongWith(this.sShooter.sysidBtmDynamic())
+					.alongWith(new PrintCommand("Running Dynamic Identification"))
 			);
 	}
 
