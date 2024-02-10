@@ -25,16 +25,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class Shooter extends SubsystemBase {
-	private final int kTopShooterCanID = 32;
-	private final int kBottomShooterCanID = 33;
-	private final int kFeederCanID = 31;
+	private static final int kTopShooterCanID = 32;
+	private static final int kBottomShooterCanID = 33;
+	private static final int kFeederCanID = 31;
 
 	//SparkMax controllers
-	private final CANSparkMax mShooterTop = new CANSparkMax(this.kTopShooterCanID, MotorType.kBrushless);
+	private final CANSparkMax mShooterTop = new CANSparkMax(Shooter.kTopShooterCanID, MotorType.kBrushless);
 	private final RelativeEncoder mShooterTopEnc = this.mShooterTop.getEncoder();
-	private final CANSparkMax mShooterBottom = new CANSparkMax(this.kBottomShooterCanID, MotorType.kBrushless);
+	private final CANSparkMax mShooterBottom = new CANSparkMax(Shooter.kBottomShooterCanID, MotorType.kBrushless);
 	private final RelativeEncoder mShooterBtmEnc = this.mShooterBottom.getEncoder();
-	private final CANSparkMax mFeedMotor = new CANSparkMax(this.kFeederCanID, MotorType.kBrushless);
+	private final CANSparkMax mFeedMotor = new CANSparkMax(Shooter.kFeederCanID, MotorType.kBrushless);
 
 	private static final String kMotorSpeedName = "Motor Speed";
 	private static final String kFeedSpeedName = "Feed Speed";
@@ -89,25 +89,25 @@ public class Shooter extends SubsystemBase {
 		// this.mShooterBottom.follow(mShooterTop, true);
 		this.mShooterBottom.setInverted(true);
 		//returns motor speed and feed speed
-		SmartDashboard.setDefaultNumber(kMotorSpeedName, 0);
-		SmartDashboard.setDefaultNumber(kFeedSpeedName, 0);
-		SmartDashboard.setDefaultNumber(kSpinupTimeName, 2.0);
-		SmartDashboard.setDefaultNumber(kFeedTimeName, 1.0);
-		SmartDashboard.setDefaultString(kStatusName, "");
+		SmartDashboard.setDefaultNumber(Shooter.kMotorSpeedName, 0);
+		SmartDashboard.setDefaultNumber(Shooter.kFeedSpeedName, 0);
+		SmartDashboard.setDefaultNumber(Shooter.kSpinupTimeName, 2.0);
+		SmartDashboard.setDefaultNumber(Shooter.kFeedTimeName, 1.0);
+		SmartDashboard.setDefaultString(Shooter.kStatusName, "");
 
 		this.setDefaultCommand(this.run(() -> {
 			this.mShooterTop.stopMotor();
 			this.mFeedMotor.stopMotor();
 			this.mTimer.stop();
-			SmartDashboard.putString(kStatusName, "Stopped shooting");
+			SmartDashboard.putString(Shooter.kStatusName, "Stopped shooting");
 		}));
 
 		// Print out expected CAN IDs
 		System.out.println(
 			"Can IDs:" +
-			"\n\tTop shooter motor: " + kTopShooterCanID +
-			"\n\tBottom shooter motor: " + kBottomShooterCanID +
-			"\n\tFeed motor: " + kFeederCanID
+			"\n\tTop shooter motor: " + Shooter.kTopShooterCanID +
+			"\n\tBottom shooter motor: " + Shooter.kBottomShooterCanID +
+			"\n\tFeed motor: " + Shooter.kFeederCanID
 		);
 	}
 
@@ -119,17 +119,17 @@ public class Shooter extends SubsystemBase {
 		final Command shootCmd = new SequentialCommandGroup(
 			this.runOnce(() -> {
 				//Restarts timer and sets the speed
-				this.mShooterTop.set(SmartDashboard.getNumber(kMotorSpeedName, 0));
+				this.mShooterTop.set(SmartDashboard.getNumber(Shooter.kMotorSpeedName, 0));
 				this.mTimer.restart();
-				SmartDashboard.putString(kStatusName, "Spinning up...");
+				SmartDashboard.putString(Shooter.kStatusName, "Spinning up...");
 			}),
-			this.deferredWaitCommand(() -> SmartDashboard.getNumber(kSpinupTimeName, 2.0)),
+			this.deferredWaitCommand(() -> SmartDashboard.getNumber(Shooter.kSpinupTimeName, 2.0)),
 			//Sets speed of feed motor
 			this.runOnce(() -> {
-				this.mFeedMotor.set(SmartDashboard.getNumber(kFeedSpeedName, 0));
-				SmartDashboard.putString(kStatusName, "Feeding");
+				this.mFeedMotor.set(SmartDashboard.getNumber(Shooter.kFeedSpeedName, 0));
+				SmartDashboard.putString(Shooter.kStatusName, "Feeding");
 			}),
-			this.deferredWaitCommand(() -> SmartDashboard.getNumber(kFeedTimeName, 1.0)),
+			this.deferredWaitCommand(() -> SmartDashboard.getNumber(Shooter.kFeedTimeName, 1.0)),
 			new RepeatCommand(new InstantCommand())
 		);
 
