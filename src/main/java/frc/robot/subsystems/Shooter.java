@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -60,7 +61,7 @@ public class Shooter extends SubsystemBase {
 					this.mTopVelocity.mut_replace(this.mShooterTopEnc.getVelocity(), Units.RadiansPerSecond)
 				);
 			},
-			this
+			new SubsystemBase() {}
 		)
 	);
 
@@ -80,7 +81,7 @@ public class Shooter extends SubsystemBase {
 					this.mBtmVelocity.mut_replace(this.mShooterBtmEnc.getVelocity(), Units.RadiansPerSecond)
 				);
 			},
-			this
+			new SubsystemBase() {}
 		)
 	);
 
@@ -138,19 +139,21 @@ public class Shooter extends SubsystemBase {
 		return shootCmd;
 	}
 
-	public Command sysidTopQuasi() {
-		return this.mSysIdRoutTop.quasistatic(Direction.kForward);
+	public Command sysidQuasi() {
+		final var cmd = new ParallelCommandGroup(
+			this.mSysIdRoutTop.quasistatic(Direction.kForward),
+			this.mSysIdRoutBtm.quasistatic(Direction.kForward)
+		);
+		cmd.addRequirements(this);
+		return cmd;
 	}
 
-	public Command sysidBtmQuasi() {
-		return this.mSysIdRoutBtm.quasistatic(Direction.kForward);
-	}
-
-	public Command sysidTopDynamic() {
-		return this.mSysIdRoutTop.dynamic(Direction.kForward);
-	}
-
-	public Command sysidBtmDynamic() {
-		return this.mSysIdRoutBtm.dynamic(Direction.kForward);
+	public Command sysidDynamic() {
+		final var cmd = new ParallelCommandGroup(
+			this.mSysIdRoutTop.dynamic(Direction.kForward),
+			this.mSysIdRoutBtm.dynamic(Direction.kForward)
+		);
+		cmd.addRequirements(this);
+		return cmd;
 	}
 }

@@ -48,20 +48,19 @@ public class RobotContainer {
 		// cancelling on release.
 		// m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 		
-		this.mJoystick.button(1).whileTrue(this.sShooter.cmdShoot());
-		this.mJoystick.button(2)
-			.whileTrue(
-				this.sShooter.sysidTopQuasi()
-					.alongWith(this.sShooter.sysidBtmQuasi())
-					.alongWith(new PrintCommand("Running Quasistatic Identification"))
-			);
+		this.mJoystick.button(1).whileTrue(
+			this.sShooter.cmdShoot()
+		);
 
-		this.mJoystick.button(3)
-			.whileTrue(
-				this.sShooter.sysidTopDynamic()
-					.alongWith(this.sShooter.sysidBtmDynamic())
-					.alongWith(new PrintCommand("Running Dynamic Identification"))
-			);
+		this.mJoystick.button(2).whileTrue(
+			this.sShooter.sysidQuasi()
+				.alongWith(new PrintCommand("Running Quasistatic Identification"))
+		);
+
+		this.mJoystick.button(3).whileTrue(
+			this.sShooter.sysidDynamic()
+				.alongWith(new PrintCommand("Running Dynamic Identification"))
+		);
 	}
 
 	/**
