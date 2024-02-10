@@ -84,7 +84,6 @@ public class Shooter extends SubsystemBase {
 		)
 	);
 
-
 	public Shooter() {
 		// this.mShooterBottom.follow(mShooterTop, true);
 		this.mShooterBottom.setInverted(true);
@@ -96,6 +95,7 @@ public class Shooter extends SubsystemBase {
 
 		this.setDefaultCommand(this.run(() -> {
 			this.mShooterTop.stopMotor();
+			this.mShooterBottom.stopMotor();
 			this.mFeedMotor.stopMotor();
 			this.mTimer.stop();
 			SmartDashboard.putString(Shooter.kStatusName, "Stopped shooting");
@@ -113,12 +113,14 @@ public class Shooter extends SubsystemBase {
 	private Command deferredWaitCommand(DoubleSupplier time) {
 		return this.defer(() -> new WaitCommand(time.getAsDouble()));
 	}
-	
+
 	public Command cmdShoot() {
 		final Command shootCmd = new SequentialCommandGroup(
 			this.runOnce(() -> {
 				//Restarts timer and sets the speed
-				this.mShooterTop.set(SmartDashboard.getNumber(Shooter.kMotorSpeedName, 0));
+				final double speed = SmartDashboard.getNumber(Shooter.kMotorSpeedName, 0);
+				this.mShooterTop.set(speed);
+				this.mShooterBottom.set(speed);
 				this.mTimer.restart();
 				SmartDashboard.putString(Shooter.kStatusName, "Spinning up...");
 			}),
