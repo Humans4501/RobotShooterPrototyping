@@ -50,7 +50,7 @@ public class Shooter extends SubsystemBase {
 		new SysIdRoutine.Config(),
 		new SysIdRoutine.Mechanism(
 			(Measure<Voltage> volts) -> {
-				this.mShooterTop.setVoltage(volts.in(Units.Volts));
+				this.mShooterTop.set(volts.in(Units.Volts) / RobotController.getBatteryVoltage());
 			},
 			log -> {
 				log.motor("top-motor")
@@ -64,7 +64,7 @@ public class Shooter extends SubsystemBase {
 					this.mShooterTopEnc.getVelocity(), Units.RadiansPerSecond
 				));
 			},
-			new SubsystemBase() {}
+			this
 		)
 	);
 
@@ -75,7 +75,7 @@ public class Shooter extends SubsystemBase {
 		new SysIdRoutine.Config(),
 		new SysIdRoutine.Mechanism(
 			(Measure<Voltage> volts) -> {
-				this.mShooterBottom.setVoltage(volts.in(Units.Volts));
+				this.mShooterBottom.set(volts.in(Units.Volts) / RobotController.getBatteryVoltage());
 			},
 			log -> {
 				log.motor("btm-motor")
@@ -85,11 +85,11 @@ public class Shooter extends SubsystemBase {
 				.angularPosition(this.mBtmPos.mut_replace(
 					this.mShooterBtmEnc.getPosition(), Units.Radians
 				))
-				.angularVelocity(
-					this.mBtmVelocity.mut_replace(this.mShooterBtmEnc.getVelocity(), Units.RadiansPerSecond)
-				);
+				.angularVelocity(this.mBtmVelocity.mut_replace(
+					this.mShooterBtmEnc.getVelocity(), Units.RadiansPerSecond
+				));
 			},
-			new SubsystemBase() {}
+			this
 		)
 	);
 
@@ -98,7 +98,10 @@ public class Shooter extends SubsystemBase {
 		this.mShooterBottom.setInverted(true);
 
 		this.mShooterTopEnc.setPositionConversionFactor(2.0 * Math.PI);
-		this.mShooterBtmEnc.setPositionConversionFactor((2.0 * Math.PI) / 60.0);
+		this.mShooterTopEnc.setVelocityConversionFactor((2.0 * Math.PI) / 60.0);
+
+		this.mShooterBtmEnc.setPositionConversionFactor(2.0 * Math.PI);
+		this.mShooterBtmEnc.setVelocityConversionFactor((2.0 * Math.PI) / 60.0);
 
 		//returns motor speed and feed speed
 		SmartDashboard.setDefaultNumber(Shooter.kMotorSpeedName, 0);
@@ -151,19 +154,19 @@ public class Shooter extends SubsystemBase {
 		return shootCmd;
 	}
 
-	public Command sysidTopQuasi() {
-		return this.mSysIdRoutTop.quasistatic(Direction.kForward);
+	public Command sysidTopQuasi(final Direction dir) {
+		return this.mSysIdRoutTop.quasistatic(dir);
 	}
 
-	public Command sysidBtmQuasi() {
-		return this.mSysIdRoutBtm.quasistatic(Direction.kForward);
+	public Command sysidBtmQuasi(final Direction dir) {
+		return this.mSysIdRoutBtm.quasistatic(dir);
 	}
 
-	public Command sysidTopDynamic() {
-		return this.mSysIdRoutTop.dynamic(Direction.kForward);
+	public Command sysidTopDynamic(final Direction dir) {
+		return this.mSysIdRoutTop.dynamic(dir);
 	}
 
-	public Command sysidBtmDynamic() {
-		return this.mSysIdRoutBtm.dynamic(Direction.kForward);
+	public Command sysidBtmDynamic(final Direction dir) {
+		return this.mSysIdRoutBtm.dynamic(dir);
 	}
 }

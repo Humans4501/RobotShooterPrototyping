@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Shooter;
 
@@ -53,23 +54,43 @@ public class RobotContainer {
 		);
 
 		this.mJoystick.button(2).whileTrue(
-			this.sShooter.sysidTopQuasi()
-				.alongWith(new PrintCommand("Running Quasistatic Identification"))
+			this.sShooter.sysidTopQuasi(Direction.kForward)
+				.alongWith(new PrintCommand("Running Quasistatic Identification fwd top"))
 		);
 
 		this.mJoystick.button(3).whileTrue(
-			this.sShooter.sysidTopDynamic()
-				.alongWith(new PrintCommand("Running Dynamic Identification"))
+			this.sShooter.sysidTopDynamic(Direction.kForward)
+				.alongWith(new PrintCommand("Running Dynamic Identification fwd top"))
 		);
 
 		this.mJoystick.button(4).whileTrue(
-			this.sShooter.sysidBtmQuasi()
-				.alongWith(new PrintCommand("Running Quasistatic Identification"))
+			this.sShooter.sysidBtmQuasi(Direction.kForward)
+				.alongWith(new PrintCommand("Running Quasistatic Identification fwd btm"))
 		);
 
 		this.mJoystick.button(5).whileTrue(
-			this.sShooter.sysidBtmDynamic()
-				.alongWith(new PrintCommand("Running Dynamic Identification"))
+			this.sShooter.sysidBtmDynamic(Direction.kForward)
+				.alongWith(new PrintCommand("Running Dynamic Identification fwd btm"))
+		);
+
+		this.mJoystick.button(6).whileTrue(
+			this.sShooter.sysidTopQuasi(Direction.kReverse)
+				.alongWith(new PrintCommand("Running Quasistatic Identification rev top"))
+		);
+
+		this.mJoystick.button(7).whileTrue(
+			this.sShooter.sysidTopDynamic(Direction.kReverse)
+				.alongWith(new PrintCommand("Running Dynamic Identification rev top"))
+		);
+
+		this.mJoystick.button(8).whileTrue(
+			this.sShooter.sysidBtmQuasi(Direction.kReverse)
+				.alongWith(new PrintCommand("Running Quasistatic Identification rev btm"))
+		);
+
+		this.mJoystick.button(9).whileTrue(
+			this.sShooter.sysidBtmDynamic(Direction.kReverse)
+				.alongWith(new PrintCommand("Running Dynamic Identification rev btm"))
 		);
 	}
 
