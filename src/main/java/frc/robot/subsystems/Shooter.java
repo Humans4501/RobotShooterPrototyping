@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,6 +44,7 @@ public class Shooter extends SubsystemBase {
 	private final Timer mTimer = new Timer();
 
 	private final MutableMeasure<Voltage> mTopAppliedVolts = MutableMeasure.mutable(Units.Volts.of(0.0));
+	private final MutableMeasure<Angle> mTopPos = MutableMeasure.mutable(Units.Radians.of(0.0));
 	private final MutableMeasure<Velocity<Angle>> mTopVelocity = MutableMeasure.mutable(Units.RadiansPerSecond.of(0.0));
 	private final SysIdRoutine mSysIdRoutTop = new SysIdRoutine(
 		new SysIdRoutine.Config(),
@@ -56,27 +56,36 @@ public class Shooter extends SubsystemBase {
 				log.motor("top-motor")
 				.voltage(this.mTopAppliedVolts.mut_replace(
 					this.mShooterTop.get() * RobotController.getBatteryVoltage(), Units.Volts
-				)).angularVelocity(
-					this.mTopVelocity.mut_replace(this.mShooterTopEnc.getVelocity(), Units.RadiansPerSecond)
-				);
+				))
+				.angularPosition(this.mTopPos.mut_replace(
+					this.mShooterTopEnc.getPosition(), Units.Radians
+				))
+				.angularVelocity(this.mTopVelocity.mut_replace(
+					this.mShooterTopEnc.getVelocity(), Units.RadiansPerSecond
+				));
 			},
 			new SubsystemBase() {}
 		)
 	);
 
 	private final MutableMeasure<Voltage> mBtmAppliedVolts = MutableMeasure.mutable(Units.Volts.of(0.0));
+	private final MutableMeasure<Angle> mBtmPos = MutableMeasure.mutable(Units.Radians.of(0.0));
 	private final MutableMeasure<Velocity<Angle>> mBtmVelocity = MutableMeasure.mutable(Units.RadiansPerSecond.of(0.0));
 	private final SysIdRoutine mSysIdRoutBtm = new SysIdRoutine(
 		new SysIdRoutine.Config(),
 		new SysIdRoutine.Mechanism(
 			(Measure<Voltage> volts) -> {
-				this.mShooterTop.setVoltage(volts.in(Units.Volts));
+				this.mShooterBottom.setVoltage(volts.in(Units.Volts));
 			},
 			log -> {
 				log.motor("btm-motor")
 				.voltage(this.mBtmAppliedVolts.mut_replace(
-					this.mShooterTop.get() * RobotController.getBatteryVoltage(), Units.Volts
-				)).angularVelocity(
+					this.mShooterBottom.get() * RobotController.getBatteryVoltage(), Units.Volts
+				))
+				.angularPosition(this.mBtmPos.mut_replace(
+					this.mShooterBtmEnc.getPosition(), Units.Radians
+				))
+				.angularVelocity(
 					this.mBtmVelocity.mut_replace(this.mShooterBtmEnc.getVelocity(), Units.RadiansPerSecond)
 				);
 			},
@@ -87,6 +96,10 @@ public class Shooter extends SubsystemBase {
 	public Shooter() {
 		// this.mShooterBottom.follow(mShooterTop, true);
 		this.mShooterBottom.setInverted(true);
+
+		this.mShooterTopEnc.setPositionConversionFactor(2.0 * Math.PI);
+		this.mShooterBtmEnc.setPositionConversionFactor((2.0 * Math.PI) / 60.0);
+
 		//returns motor speed and feed speed
 		SmartDashboard.setDefaultNumber(Shooter.kMotorSpeedName, 0);
 		SmartDashboard.setDefaultNumber(Shooter.kFeedSpeedName, 0);
@@ -138,21 +151,19 @@ public class Shooter extends SubsystemBase {
 		return shootCmd;
 	}
 
-	public Command sysidQuasi() {
-		final var cmd = new ParallelCommandGroup(
-			this.mSysIdRoutTop.quasistatic(Direction.kForward),
-			this.mSysIdRoutBtm.quasistatic(Direction.kForward)
-		);
-		cmd.addRequirements(this);
-		return cmd;
+	public Command sysidTopQuasi() {
+		return this.mSysIdRoutTop.quasistatic(Direction.kForward);
 	}
 
-	public Command sysidDynamic() {
-		final var cmd = new ParallelCommandGroup(
-			this.mSysIdRoutTop.dynamic(Direction.kForward),
-			this.mSysIdRoutBtm.dynamic(Direction.kForward)
-		);
-		cmd.addRequirements(this);
-		return cmd;
+	public Command sysidBtmQuasi() {
+		return this.mSysIdRoutBtm.quasistatic(Direction.kForward);
+	}
+
+	public Command sysidTopDynamic() {
+		return this.mSysIdRoutTop.dynamic(Direction.kForward);
+	}
+
+	public Command sysidBtmDynamic() {
+		return this.mSysIdRoutBtm.dynamic(Direction.kForward);
 	}
 }
