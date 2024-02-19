@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
 	private static final double kDpid = 0.0;
 	private static final double kTolerance = 8.0;
 
-	//SparkMax controllers
+	// SparkMax controllers
 	private final CANSparkMax mShooterTop = new CANSparkMax(Shooter.kTopShooterCanID, MotorType.kBrushless);
 	private final RelativeEncoder mTopEncoder;
 	private final CANSparkMax mShooterBottom = new CANSparkMax(Shooter.kBottomShooterCanID, MotorType.kBrushless);
