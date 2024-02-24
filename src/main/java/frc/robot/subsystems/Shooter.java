@@ -17,6 +17,12 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/*
+ * Good & Tested Values on Table
+ * - Motor Speed: 35.0 (220 rad/s)
+ * - Feed Speed: -0.5*12 volts
+ */
+
 /**
  * Shooter subsystem. PIDF stuff is in rad/s
  */
