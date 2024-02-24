@@ -80,9 +80,9 @@ public class Shooter extends SubsystemBase {
 		// Print out expected CAN IDs
 		System.out.println(
 			"Can IDs:" +
-			"\n\tTop shooter motor: " + kTopShooterCanID +
-			"\n\tBottom shooter motor: " + kBottomShooterCanID +
-			"\n\tFeed motor: " + kFeederCanID
+			"\n    Top shooter motor: " + kTopShooterCanID +
+			"\n    Bottom shooter motor: " + kBottomShooterCanID +
+			"\n    Feed motor: " + kFeederCanID
 		);
 	}
 
